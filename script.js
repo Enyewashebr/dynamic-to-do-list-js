@@ -115,3 +115,63 @@ document.addEventListener("DOMContentLoaded", function () {
 //      localStorage.setItem("tasks", JSON.stringify(updatedTasks));
 //    }
 //  });
+document.addEventListener("DOMContentLoaded", () => {
+  loadTasks();
+  // Other initialization code
+
+  const addButton = document.getElementById("addButton");
+  addButton.addEventListener("click", handleAddTask);
+
+  const taskList = document.getElementById("taskList");
+  taskList.addEventListener("click", handleRemoveTask);
+});
+
+function loadTasks() {
+  const storedTasks = JSON.parse(localStorage.getItem("tasks") || "[]");
+  storedTasks.forEach((taskText) => addTask(taskText, false));
+}
+
+function addTask(taskText, save = true) {
+  const taskList = document.getElementById("taskList");
+  const taskItem = document.createElement("li");
+  taskItem.textContent = taskText;
+  taskList.appendChild(taskItem);
+
+  if (save) {
+    const storedTasks = JSON.parse(localStorage.getItem("tasks") || "[]");
+    storedTasks.push(taskText);
+    localStorage.setItem("tasks", JSON.stringify(storedTasks));
+  }
+}
+
+function handleAddTask() {
+  const taskInput = document.getElementById("taskInput");
+  const taskText = taskInput.value.trim();
+
+  if (taskText !== "") {
+    addTask(taskText);
+    taskInput.value = "";
+  }
+}
+
+function handleRemoveTask(event) {
+  if (event.target.classList.contains("remove-button")) {
+    const taskItem = event.target.parentNode;
+    const taskText = taskItem.textContent;
+    removeTask(taskItem);
+    removeFromLocalStorage(taskText);
+  }
+}
+
+function removeTask(taskItem) {
+  taskItem.remove();
+}
+
+function removeFromLocalStorage(taskText) {
+  const storedTasks = JSON.parse(localStorage.getItem("tasks") || "[]");
+  const index = storedTasks.indexOf(taskText);
+  if (index > -1) {
+    storedTasks.splice(index, 1);
+    localStorage.setItem("tasks", JSON.stringify(storedTasks));
+  }
+}
